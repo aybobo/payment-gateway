@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Interfaces\PaymentGatewayInterface;
-use Illuminate\Http\Response;
 
 class PaymentGatewayController extends Controller
 {
@@ -13,55 +11,53 @@ class PaymentGatewayController extends Controller
 
     public function __construct(PaymentGatewayInterface $gateway) 
     {
+        $this->middleware(['auth','verified']);
         $this->gateway = $gateway;
     }
 
     public function index()
     {
-        $gateways = $this->orderRepository->getAllGateways();
+        $gateways = $this->gateway->getAllGateways();
         return view('gateways.index', ['gateways' => $gateways]);
     }
 
     public function store(Request $request) 
     {
-        // $orderDetails = $request->only([
-        //     'client',
-        //     'details'
-        // ]);
-
-        $validated = $request->validate(['name' => 'required|unique:gatewats|min:8|max:50']);
-        $gateway = [$request->input('name')];
-        $this->gateway->createGateway($gateway);
-        return redirect()->back();
+        $validated = $request->validate(['name' => 'required|unique:gateways|min:3|max:20']);
+        $details = $request->only(['name']);
+        $this->gateway->createGateway($details);
+        $request->session()->flash('message', 'Payment gateway created');
+        return redirect()->route('index.payment.gateway');
     }
 
     public function show(Request $request)
     {
-        $orderId = $request->route('id');
-
-        return response()->json([
-            'data' => $this->orderRepository->getOrderById($orderId)
-        ]);
+        $id = $request->route('id');
+        $gateway = $this->gateway->getGatewayById($id);
+        return view('gateways.edit', ['gateway' => $gateway]);
     }
 
     public function update(Request $request)
     {
-        $orderId = $request->route('id');
-        $orderDetails = $request->only([
-            'client',
-            'details'
+        $validated = $request->validate([
+            'name' => 'required|min:3|max:20',
+            'status' => 'required',
         ]);
-
-        return response()->json([
-            'data' => $this->orderRepository->updateOrder($orderId, $orderDetails)
+        $id = $request->route('id');
+        $details = $request->only([
+            'name',
+            'status',
         ]);
+        $this->gateway->updateGateway($id, $details);
+        $request->session()->flash('message', 'Payment gateway updated');
+        return redirect()->route('index.payment.gateway');
     }
 
     public function destroy(Request $request) 
     {
-        $orderId = $request->route('id');
-        $this->orderRepository->deleteOrder($orderId);
-
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        $id = $request->route('id');
+        $this->gateway->deleteGateway($id);
+        $request->session()->flash('message', 'Payment method deleted');
+        return redirect()->back();
     }
 }

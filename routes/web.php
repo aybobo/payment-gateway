@@ -25,11 +25,11 @@ Route::view('/', 'auth.login')->name('index')->middleware('guest');
 Auth::routes(['verify' => true]);
 Route::redirect('/home', '/payment-methods')->name('home');
 
-Route::get('/gateways', [PaymentGatewayController::class, 'index']);
-Route::get('gateways/{id}', [PaymentGatewayController::class, 'show']);
-Route::post('gateways', [PaymentGatewayController::class, 'store']);
-Route::put('gateways/{id}', [PaymentGatewayController::class, 'update']);
-Route::delete('gateways/{id}', [PaymentGatewayController::class, 'delete']);
+Route::get('/payment-gateways', [PaymentGatewayController::class, 'index'])->name('index.payment.gateway');
+Route::post('/payment-gateway', [PaymentGatewayController::class, 'store'])->name('post.payment.gateway');
+Route::get('/payment-gateway/{id}', [PaymentGatewayController::class, 'show'])->name('get.payment.gateway');
+Route::put('/payment-gateway/{id}', [PaymentGatewayController::class, 'update'])->name('update.payment.gateway');
+Route::delete('/payment-gateway/{id}', [PaymentGatewayController::class, 'destroy'])->name('delete.payment.gateway');
 
 Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('index.payment.methods');
 Route::post('/payment-method', [PaymentMethodController::class, 'store'])->name('post.payment.method');

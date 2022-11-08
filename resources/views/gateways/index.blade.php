@@ -1,5 +1,5 @@
 @extends('layout')
-@section('title', 'Dashboard')
+@section('title', 'PaymentGateways')
 
 @section('content')
 
@@ -17,18 +17,18 @@
 @endif
 
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-8 offset-md-2">
         <div class="" style="margin-bottom: 30px;">
             <div class="row">
                 <div class="col-md-8">
-                    <h3>Payment Methods</h3>
+                    <h3>Payment Gateways</h3>
                 </div>
                 <div class="col-md-4">
-                    <a href="#addPaymentMethod" data-toggle="modal" class="btn btn-primary">Add Payment Method</a>
+                    <a href="#addPaymentGateway" data-toggle="modal" class="btn btn-primary">Add Payment Gateway</a>
                 </div>
             </div>
         </div>
-        @if (count($all_methods) > 0)
+        @if (count($gateways) > 0)
             
             <table class="table" id="datatable">
                 <thead>
@@ -40,13 +40,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach ($all_methods as $all_method)
+                @foreach ($gateways as $gateway)
                     <tr>
-                        <td>{{ $all_method->name }}</td>
-                        <td>{{ $all_method->status }}</td>
-                        <td><a href="{{ route('get.payment.method', [$all_method->id]) }}" class="btn btn-default btn-sm border border-dark rounded">Edit</a></td>
+                        <td>{{ $gateway->name }}</td>
+                        <td>{{ $gateway->status }}</td>
+                        <td><a href="{{ route('get.payment.gateway', [$gateway->id]) }}" class="btn btn-default btn-sm border border-dark rounded">Edit</a></td>
                         <td>
-                            <form action="{{ route('delete.payment.method', [$all_method->id]) }}" method="post">
+                            <form action="{{ route('delete.payment.gateway', [$gateway->id]) }}" method="post">
                                 @csrf
                                 @method('DELETE')
                                 <input type="submit" value="Delete" class="btn btn-danger btn-sm border border-dark rounded">
@@ -57,29 +57,27 @@
                 </tbody>
             </table>
         @else
-            <h3>No Payment Method</h3>
+            <h3>No Payment Gateway</h3>
         @endif
-    </div>
-    <div class="col-md-2 offset-md-1">
-        <div class="" style="margin-top: 50px;">
-            <a href="{{ route('index.payment.gateway') }}" class="btn btn-primary">Payment Gateways</a>
+        <div class="" style="margin-top: 20px;">
+            <a href="{{ route('index.payment.methods') }}" class="btn btn-primary">Back</a>
         </div>
     </div>
 </div>
 
 <!-- start modal -->
-<div class="modal fade" id="addPaymentMethod" tabindex="-1" role="dialog" aria-labelledby="addPaymentMethod" aria-hidden="true">
+<div class="modal fade" id="addPaymentGateway" tabindex="-1" role="dialog" aria-labelledby="addPaymentGateway" aria-hidden="true">
     <div class="modal-dialog" role="document">
     <div class="modal-content">
         <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Payment Method</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Add Payment Gateway</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
         </div>
         <div class="modal-body">
 
-        <form action="{{ route('post.payment.method') }}" method="post">
+        <form action="{{ route('post.payment.gateway') }}" method="post">
             @csrf
             <div class="form-group">
                 <label for="name">Name</label>

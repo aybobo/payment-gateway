@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Interfaces\PaymentGatewayInterface;
 use App\Models\Gateway;
-use Illuminate\Support\Facades\DB;
 
 class GatewayRepository implements PaymentGatewayInterface 
 {
@@ -15,11 +14,7 @@ class GatewayRepository implements PaymentGatewayInterface
 
     public function createGateway(array $details)
     {
-        //return Gateway::create($details);
-
-        $gateway = new Gateway;
-        $gateway->name = $details['name'];
-        return $gateway->save();
+        return Gateway::create($details);
     }
 
     public function getGatewayById($id)
@@ -29,13 +24,14 @@ class GatewayRepository implements PaymentGatewayInterface
 
     public function updateGateway($id, array $details)
     {
-        //return Gateway::whereId($id)->update($details);
-
         $gateway = Gateway::find($id);
         $gateway->name = $details['name'];
         $gateway->status = $details['status'];
-        if ($details['status'] === 'Yes') {
-            DB::table('gateways')->where('status', 'Yes')->update(['status' => 'No']);
+        $check_duplicate_name = Gateway::where('id', '!=', $id)
+                                        ->where('name', $details['name'])
+                                        ->get();
+        if (count($check_duplicate_name) > 0) {
+            return;
         }
         return $gateway->save();
     }
